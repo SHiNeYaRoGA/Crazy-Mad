@@ -1,0 +1,142 @@
+:root {
+  --maroon: #7a1c1c;
+  --maroon-dark: #5c1414;
+  --gold: #b8860b;
+  --gold-light: #e3c878;
+  --cream: #fdf8ee;
+  --ink: #2b2320;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Sarabun", "TH SarabunPSK", Arial, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+}
+a { color: inherit; }
+.topbar {
+  background: var(--maroon);
+  color: #fff;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 3px solid var(--gold);
+}
+.topbar .emblem {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--maroon-dark);
+  border: 2px solid var(--gold-light);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 12px;
+}
+.navbar {
+  background: #fff;
+  border-bottom: 1px solid var(--gold-light);
+  padding: 10px 20px;
+  display: flex; gap: 8px; align-items: center;
+  position: sticky; top: 0; z-index: 10;
+}
+.navlink {
+  text-decoration: none;
+  padding: 8px 14px;
+  border: 1px solid var(--gold-light);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--maroon);
+  font-weight: 700;
+}
+.navlink.active, .navlink:hover {
+  background: var(--maroon);
+  color: #fff;
+  border-color: var(--maroon);
+}
+.container { max-width: 960px; margin: 0 auto; padding: 24px 16px 60px; }
+.card {
+  background: #fff;
+  border: 1px solid var(--gold-light);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 12px 0;
+}
+.card h3 { margin: 0 0 8px; color: var(--maroon); }
+.btn {
+  display: inline-block;
+  background: var(--maroon);
+  color: #fff;
+  border: none;
+  border-bottom: 2px solid var(--gold);
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-secondary {
+  background: #fff;
+  color: var(--maroon);
+  border: 1px solid var(--gold);
+}
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+pre.md {
+  white-space: pre-wrap;
+  font-family: inherit;
+  background: #fff;
+  border: 1px solid var(--gold-light);
+  border-radius: 8px;
+  padding: 16px;
+  line-height: 1.7;
+}
+.badge {
+  display: inline-block;
+  background: var(--cream);
+  border: 1px solid var(--gold);
+  color: var(--maroon);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.footer {
+  background: var(--maroon-dark);
+  color: #f5e9c8;
+  text-align: center;
+  padding: 16px;
+  border-top: 3px solid var(--gold);
+  font-size: 14px;
+}
+input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--maroon); }
+.jobitem { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed var(--gold-light); flex-wrap: wrap; }
+
+/* รายละเอียดสินค้า: 2 คอลัมน์บนจอใหญ่ */
+.pdetail { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* AI popup: ขนาดยืดหยุ่น */
+.aipopup { width: 380px; max-width: 90vw; height: 540px; }
+
+/* มือถือ <= 640px */
+@media (max-width: 640px) {
+  .container { padding: 12px 10px 80px; }
+  .topbar { padding: 10px 12px; font-size: 14px; }
+  .navbar { padding: 8px 10px; gap: 6px; overflow-x: auto; white-space: nowrap; }
+  .navlink { padding: 6px 10px; font-size: 14px; }
+  .card { padding: 12px; }
+  .grid3 { grid-template-columns: 1fr; }
+  .pdetail { grid-template-columns: 1fr; }
+  .aipopup { left: 10px; right: 10px; bottom: 10px; width: auto; max-width: none; height: 70vh; }
+  .btn { padding: 8px 14px; }
+  input, select, textarea { font-size: 16px; }
+}
+
+/* แท็บเล็ต 641-1024px */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .container { max-width: 900px; }
+  .grid3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ทีวี >= 1600px */
+@media (min-width: 1600px) {
+  .container { max-width: 1400px; }
+  body { font-size: 19px; }
+  .grid3 { grid-template-columns: repeat(4, 1fr); }
+}

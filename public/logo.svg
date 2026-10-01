@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <circle cx="48" cy="48" r="46" fill="#7A1C1C"/>
+  <circle cx="48" cy="48" r="44" fill="none" stroke="#B8860B" stroke-width="2.5"/>
+  <circle cx="48" cy="48" r="34" fill="none" stroke="#E3C878" stroke-width="1.5"/>
+  <circle cx="48" cy="52" r="20" fill="#C9A227"/>
+  <path id="topArc" d="M 16 48 A 32 32 0 0 1 80 48" fill="none"/>
+  <text font-size="9" fill="#fff" font-weight="bold" font-family="Sarabun, sans-serif" letter-spacing="1.5">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">กรมราชทัณฑ์</textPath>
+  </text>
+  <path id="botArc" d="M 20 48 A 28 28 0 0 0 76 48" fill="none"/>
+  <text font-size="6.5" fill="#fff" font-family="Arial, sans-serif" letter-spacing="0.5">
+    <textPath href="#botArc" startOffset="50%" text-anchor="middle">DEPARTMENT OF CORRECTIONS</textPath>
+  </text>
+</svg>

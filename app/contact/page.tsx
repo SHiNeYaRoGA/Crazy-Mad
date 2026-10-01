@@ -1,15 +1,23 @@
 "use client";
-import { usePage, ptitle, pbody } from "@/lib/content";
+import { useEffect } from "react";
+import { usePage, ptitle, pbody, savePage, loadPage, DEFAULT_CONTACT_BLOCKS } from "@/lib/content";
 import { useLang } from "@/lib/i18n";
 import PageBlocks from "@/components/PageBlocks";
 
 export default function ContactPage() {
   const { lang } = useLang();
   const c = usePage("contact");
+  // seed ครั้งเดียวถ้ายังไม่มีกรอบและเนื้อความยังเป็นค่าเดิม/ว่าง
+  useEffect(() => {
+    const cur = loadPage("contact");
+    if ((!cur.blocks || !cur.blocks.length) && (!cur.body || cur.body.startsWith("หน้ารอใส่ข้อมูล"))) {
+      savePage("contact", { ...cur, blocks: DEFAULT_CONTACT_BLOCKS });
+    }
+  }, []);
   return (
-    <div style={{ textAlign: "center" }}>
+    <div>
       <h2 style={{ color: "#7a1c1c", fontSize: 28 }}>{ptitle(c, lang)}</h2>
-      <div className="card" style={{ borderTop: "4px solid #B8860B", maxWidth: 640, margin: "0 auto" }}>
+      <div className="card" style={{ borderTop: "4px solid #B8860B", maxWidth: 640 }}>
         {c.blocks && c.blocks.length
           ? <PageBlocks blocks={c.blocks} />
           : <p style={{ whiteSpace: "pre-wrap", fontSize: 18, lineHeight: 2, color: "#2b2320" }}>{pbody(c, lang)}</p>}

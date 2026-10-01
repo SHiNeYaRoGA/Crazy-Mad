@@ -7,7 +7,14 @@ export type ContentBlock = { text: string; bold: boolean; color: string; size: "
 
 export type PageContent = { title: string; body: string; title_en?: string; body_en?: string; blocks?: ContentBlock[]; showPhoto?: boolean; showVision?: boolean };
 
-export const BLOCK_COLORS = ["#7a1c1c", "#B8860B", "#2b2320", "#ffffff"];
+export const BLOCK_COLORS = ["#7a1c1c", "#B8860B", "#2b2320", "#ffffff", "#c0392b"];
+
+export const DEFAULT_CONTACT_BLOCKS: ContentBlock[] = [
+  { text: "เรือนจำจังหวัดพะเยา", bold: true, color: "#7a1c1c", size: "l", align: "left" },
+  { text: "Department of Corrections", bold: false, color: "#7a1c1c", size: "l", align: "left" },
+  { text: "919 หมู่ 1 ตำบลบ้านต้อม อำเภอเมือง\nจังหวัดพะเยา 56000", bold: false, color: "#7a1c1c", size: "m", align: "left" },
+  { text: "เบอร์โทรศัพท์ : 054-887-242\nเบอร์ FAX : 054-887-244", bold: false, color: "#c0392b", size: "m", align: "left" },
+];
 
 export const DEFAULT_PAGES: Record<PageKey, PageContent> = {
   home: { title: "งานมือผู้ต้องขัง สู่ของขวัญพะเยา", body: "ตลาดงานคราฟต์ ที่แค่พูดก็ซื้อได้ - AI พิมพ์/พูดค้นสินค้าจริง + เพลงพื้นหลัง", title_en: "Inmate Handicrafts, Gifts from Phayao", body_en: "A craft market you can shop by voice - AI finds real products + background music" },

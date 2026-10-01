@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useState } from "react";
 import type { Product } from "@/lib/products";
 import { useLang } from "@/lib/i18n";
 import { catName } from "@/lib/products";
@@ -13,6 +14,7 @@ export function pname(p: Product, lang: "th" | "en"): string {
 
 export default function ProductCard({ p }: { p: Product }) {
   const { lang, t } = useLang();
+  const [qty, setQty] = useState(1);
   return (
     <Link href={`/product/${p.id}`} style={{ textDecoration: "none" }}>
       <div className="card" style={{ padding: 0, overflow: "hidden" }}>
@@ -31,7 +33,12 @@ export default function ProductCard({ p }: { p: Product }) {
             {p.stock <= 0 ? (
               <span className="badge">{t("sold_out")}</span>
             ) : (
-              <button className="btn" onClick={(e) => { e.preventDefault(); addToCart(p.id, 1); }}>{t("add_cart")}</button>
+              <span style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                <button className="btn btn-secondary" style={{ padding: "6px 10px" }} onClick={(e) => { e.preventDefault(); setQty(Math.max(1, qty - 1)); }}>-</button>
+                <input type="number" min={1} max={p.stock} value={qty} onClick={(e) => e.preventDefault()} onChange={(e) => { e.preventDefault(); setQty(Math.min(p.stock, Math.max(1, parseInt(e.target.value) || 1))); }} style={{ width: 52, padding: 6, textAlign: "center" }} />
+                <button className="btn btn-secondary" style={{ padding: "6px 10px" }} onClick={(e) => { e.preventDefault(); setQty(Math.min(p.stock, qty + 1)); }}>+</button>
+                <button className="btn" onClick={(e) => { e.preventDefault(); addToCart(p.id, qty); }}>{t("add_cart")}</button>
+              </span>
             )}
           </div>
         </div>

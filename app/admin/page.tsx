@@ -301,6 +301,7 @@ export default function AdminPage() {
                         <option value="#B8860B">ทอง</option>
                         <option value="#2b2320">ดำ</option>
                         <option value="#ffffff">ขาว (พื้นแดง)</option>
+                        <option value="#c0392b">แดงสว่าง</option>
                       </select>
                     </label>
                     <label>ขนาด

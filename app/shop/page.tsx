@@ -17,10 +17,14 @@ export default function ShopPage() {
     window.addEventListener("stock-changed", reload);
     window.addEventListener("storage", reload);
     window.addEventListener("categories-changed", reload);
+    window.addEventListener("products-changed", reload);
+    window.addEventListener("db-pulled", reload);
     return () => {
       window.removeEventListener("stock-changed", reload);
       window.removeEventListener("storage", reload);
       window.removeEventListener("categories-changed", reload);
+      window.removeEventListener("products-changed", reload);
+      window.removeEventListener("db-pulled", reload);
     };
   }, []);
   const list = all.filter((p) => {

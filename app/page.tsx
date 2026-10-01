@@ -12,7 +12,13 @@ export default function Home() {
     const reload = () => setAll(allProducts());
     reload();
     window.addEventListener("stock-changed", reload);
-    return () => window.removeEventListener("stock-changed", reload);
+    window.addEventListener("products-changed", reload);
+    window.addEventListener("db-pulled", reload);
+    return () => {
+      window.removeEventListener("stock-changed", reload);
+      window.removeEventListener("products-changed", reload);
+      window.removeEventListener("db-pulled", reload);
+    };
   }, []);
   return (
     <div>

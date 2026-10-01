@@ -1,0 +1,15 @@
+# Firebase App Hosting - ค่ารันเว็บ Next.js (SSR + API ครบ)
+# ขั้นตอน: firebase login > firebase apphosting:secrets:set (4 ค่า) > firebase deploy
+runConfig:
+  minInstances: 0
+  maxInstances: 2
+
+env:
+  - variable: GEMINI_API_KEY
+    secret: GEMINI_API_KEY
+  - variable: NEXT_PUBLIC_SUPABASE_URL
+    secret: NEXT_PUBLIC_SUPABASE_URL
+  - variable: NEXT_PUBLIC_SUPABASE_ANON_KEY
+    secret: NEXT_PUBLIC_SUPABASE_ANON_KEY
+  - variable: VOICEVOX_ENGINE_URL
+    secret: VOICEVOX_ENGINE_URL

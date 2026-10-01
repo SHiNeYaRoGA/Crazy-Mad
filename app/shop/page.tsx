@@ -4,6 +4,7 @@ import { MOCK_PRODUCTS, allProducts, loadCategories, catName, type Product } fro
 import { usePage, ptitle } from "@/lib/content";
 import { useLang } from "@/lib/i18n";
 import ProductCard from "@/components/ProductCard";
+import PageBlocks from "@/components/PageBlocks";
 
 export default function ShopPage() {
   const page = usePage("shop");
@@ -39,6 +40,7 @@ export default function ShopPage() {
   return (
     <div>
       <h2 style={{ color: "#7a1c1c" }}>{ptitle(page, lang)} ({list.length})</h2>
+      {page.blocks && page.blocks.length > 0 && <div className="card"><PageBlocks blocks={page.blocks} /></div>}
       <div className="card" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("search_ph")} style={{ padding: 8, flex: 1, minWidth: 160 }} />
         <button className={!cat ? "btn" : "btn btn-secondary"} onClick={() => setCat("")}>{ALL}</button>

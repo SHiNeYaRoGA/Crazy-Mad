@@ -1,6 +1,7 @@
 "use client";
 import { usePage, ptitle, pbody } from "@/lib/content";
 import { useLang } from "@/lib/i18n";
+import PageBlocks from "@/components/PageBlocks";
 
 export default function AboutPage() {
   const { lang } = useLang();
@@ -22,7 +23,9 @@ export default function AboutPage() {
             : "“องค์กรที่มีประสิทธิภาพในการควบคุมและพัฒนา พฤตินิสัยผู้ต้องขังตามมาตรฐานสากลเพื่อปกป้องคุ้มครองสังคม”"}
         </p>
       </div>
-      <div className="card"><p style={{ whiteSpace: "pre-wrap" }}>{pbody(c, lang)}</p></div>
+      {c.blocks && c.blocks.length > 0
+        ? <div className="card"><PageBlocks blocks={c.blocks} /></div>
+        : <div className="card"><p style={{ whiteSpace: "pre-wrap" }}>{pbody(c, lang)}</p></div>}
     </div>
   );
 }

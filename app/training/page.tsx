@@ -1,6 +1,7 @@
 "use client";
 import { usePage, ptitle, pbody } from "@/lib/content";
 import { useLang } from "@/lib/i18n";
+import PageBlocks from "@/components/PageBlocks";
 
 export default function TrainingPage() {
   const { lang } = useLang();
@@ -8,7 +9,9 @@ export default function TrainingPage() {
   return (
     <div>
       <h2 style={{ color: "#7a1c1c" }}>{ptitle(c, lang)}</h2>
-      <div className="card"><p style={{ whiteSpace: "pre-wrap" }}>{pbody(c, lang)}</p></div>
+      {c.blocks && c.blocks.length > 0
+        ? <div className="card"><PageBlocks blocks={c.blocks} /></div>
+        : <div className="card"><p style={{ whiteSpace: "pre-wrap" }}>{pbody(c, lang)}</p></div>}
     </div>
   );
 }

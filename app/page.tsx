@@ -5,6 +5,7 @@ import { MOCK_PRODUCTS, allProducts, type Product } from "@/lib/products";
 import { usePage, ptitle, pbody } from "@/lib/content";
 import { useLang } from "@/lib/i18n";
 import ProductCard from "@/components/ProductCard";
+import PageBlocks from "@/components/PageBlocks";
 
 export default function Home() {
   const { lang, t } = useLang();
@@ -33,6 +34,7 @@ export default function Home() {
           <Link className="btn" href="/shop">{t("home_cta")}</Link>
         </div>
       </div>
+      {home.blocks && home.blocks.length > 0 && <div className="card"><PageBlocks blocks={home.blocks} /></div>}
       <h3 style={{ color: "#7a1c1c" }}>{t("featured")}</h3>
       <div className="grid3">
         {all.slice(0, 3).map((p) => <ProductCard key={p.id} p={p} />)}

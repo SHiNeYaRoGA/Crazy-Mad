@@ -6,12 +6,11 @@ export default function ContactPage() {
   const { lang } = useLang();
   const c = usePage("contact");
   return (
-    <div>
-      <h2 style={{ color: "#7a1c1c" }}>{ptitle(c, lang)}</h2>
-      <div className="card" style={{ textAlign: "center" }}>
-        <img src="/contact01.jpg" alt="ข้อมูลติดต่อ" style={{ maxWidth: 560, width: "100%", borderRadius: 8, border: "2px solid #E3C878" }} />
+    <div style={{ textAlign: "center" }}>
+      <h2 style={{ color: "#7a1c1c", fontSize: 28 }}>{ptitle(c, lang)}</h2>
+      <div className="card" style={{ borderTop: "4px solid #B8860B", maxWidth: 640, margin: "0 auto" }}>
+        <p style={{ whiteSpace: "pre-wrap", fontSize: 18, lineHeight: 2, color: "#2b2320" }}>{pbody(c, lang)}</p>
       </div>
-      <div className="card"><p style={{ whiteSpace: "pre-wrap" }}>{pbody(c, lang)}</p></div>
     </div>
   );
 }

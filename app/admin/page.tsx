@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { MOCK_PRODUCTS, allProducts, getStock, loadCategories, addCategory, removeCategory, loadCustomProducts, setStock, saveOverride, type Product } from "@/lib/products";
+import { MOCK_PRODUCTS, allProducts, getStock, loadCategories, addCategory, removeCategory, loadCatEn, saveCatEn, loadCustomProducts, setStock, saveOverride, type Product } from "@/lib/products";
 import { DEFAULT_PAGES, loadPage, savePage, type PageKey, type PageContent } from "@/lib/content";
 import { loadOrders, deleteOrder, type Order } from "@/lib/orders";
 import { DEFAULT_AI_SETTINGS, loadAISettings, saveAISettings, type AISettings } from "@/lib/aiSettings";
@@ -29,6 +29,7 @@ export default function AdminPage() {
   const [price, setPrice] = useState(100);
   const [img, setImg] = useState("");
   const [cats, setCats] = useState<string[]>([]);
+  const [catEn, setCatEn] = useState<Record<string, string>>({});
   const [newCat, setNewCat] = useState("");
   const [pickCat, setPickCat] = useState("ของที่ระลึก");
   const [editId, setEditId] = useState("");
@@ -73,6 +74,7 @@ export default function AdminPage() {
   useEffect(() => {
     setItems(allProducts());
     setCats(loadCategories());
+    setCatEn(loadCatEn());
     setPageForm(loadPage("home"));
     setAi(loadAISettings());
     setScript(loadScript());
@@ -183,6 +185,14 @@ export default function AdminPage() {
                 <span key={c} className="badge">{c}{!["งานไม้", "ผ้าทอ", "จักสาน", "ของที่ระลึก"].includes(c) && <button style={{ marginLeft: 4 }} onClick={() => { removeCategory(c); setCats(loadCategories()); }}>✕</button>}</span>
               ))}
             </div>
+            <div style={{ marginTop: 8 }}>
+              {cats.map((c) => (
+                <div key={c} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
+                  <b style={{ minWidth: 90 }}>{c}</b>
+                  <input placeholder="English name" value={catEn[c] || ""} onChange={(e) => { const next = { ...catEn, [c]: e.target.value }; setCatEn(next); saveCatEn(next); }} style={{ padding: 6, flex: 1 }} />
+                </div>
+              ))}
+            </div>
           </div>
           <div className="card">
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -260,8 +270,12 @@ export default function AdminPage() {
           <p>{t("pages_note")} (`content-{pageKey}`)</p>
           <label style={{ fontWeight: 700, color: "#7a1c1c" }}>{t("pages_title_label")}</label>
           <input value={pageForm.title} onChange={(e) => setPageForm({ ...pageForm, title: e.target.value })} style={{ width: "100%", padding: 8, marginTop: 4 }} />
+          <label style={{ fontWeight: 700, color: "#7a1c1c", marginTop: 8, display: "block" }}>{t("pages_title_label")} (English)</label>
+          <input value={pageForm.title_en || ""} onChange={(e) => setPageForm({ ...pageForm, title_en: e.target.value })} style={{ width: "100%", padding: 8, marginTop: 4 }} />
           <label style={{ fontWeight: 700, color: "#7a1c1c", marginTop: 8, display: "block" }}>{t("pages_body")}</label>
           <textarea value={pageForm.body} onChange={(e) => setPageForm({ ...pageForm, body: e.target.value })} rows={5} style={{ width: "100%", padding: 8, marginTop: 4 }} />
+          <label style={{ fontWeight: 700, color: "#7a1c1c", marginTop: 8, display: "block" }}>{t("pages_body")} (English)</label>
+          <textarea value={pageForm.body_en || ""} onChange={(e) => setPageForm({ ...pageForm, body_en: e.target.value })} rows={5} style={{ width: "100%", padding: 8, marginTop: 4 }} />
           <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
             <button className="btn" onClick={() => { savePage(pageKey, pageForm); setSaved(`${t("saved_generic")} ${pageKey} ${new Date().toLocaleTimeString()}`); }}>{t("save_page")}</button>
             <button className="btn btn-secondary" onClick={() => { setPageForm(DEFAULT_PAGES[pageKey]); savePage(pageKey, DEFAULT_PAGES[pageKey]); setSaved(t("reset_done")); }}>{t("reset_page")}</button>

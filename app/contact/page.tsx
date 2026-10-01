@@ -1,12 +1,14 @@
 "use client";
-import { usePage } from "@/lib/content";
+import { usePage, ptitle, pbody } from "@/lib/content";
+import { useLang } from "@/lib/i18n";
 
 export default function ContactPage() {
+  const { lang } = useLang();
   const c = usePage("contact");
   return (
     <div>
-      <h2 style={{ color: "#7a1c1c" }}>{c.title}</h2>
-      <div className="card"><p style={{ whiteSpace: "pre-wrap" }}>{c.body}</p></div>
+      <h2 style={{ color: "#7a1c1c" }}>{ptitle(c, lang)}</h2>
+      <div className="card"><p style={{ whiteSpace: "pre-wrap" }}>{pbody(c, lang)}</p></div>
     </div>
   );
 }

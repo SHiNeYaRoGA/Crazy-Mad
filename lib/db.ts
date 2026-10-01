@@ -3,7 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 // keys ที่ sync ขึ้นกลาง (ไม่รวม cart / เพลง / โน้ตส่วนตัว)
 export const SYNC_KEYS = [
-  "custom-products", "hidden-products", "stock-map", "product-overrides", "custom-categories",
+  "custom-products", "hidden-products", "stock-map", "product-overrides", "custom-categories", "category-en",
   "site-content", "content-migrated",
   "content-home", "content-shop", "content-training", "content-about", "content-contact",
   "orders", "ai-settings", "ai-script", "ai-notfound",

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import type { Product } from "@/lib/products";
 import { useLang } from "@/lib/i18n";
+import { catName } from "@/lib/products";
 
 import { addToCart } from "@/lib/cartStore";
 export { addToCart };
@@ -24,7 +25,7 @@ export default function ProductCard({ p }: { p: Product }) {
         )}
         <div style={{ padding: 12 }}>
           <div style={{ fontWeight: 700, minHeight: 44 }}>{pname(p, lang)}</div>
-          <div><span className="badge">{p.category}</span> <span style={{ fontSize: 12 }}>{t("stock_left")} {p.stock}</span></div>
+          <div><span className="badge">{catName(p.category, lang)}</span> <span style={{ fontSize: 12 }}>{t("stock_left")} {p.stock}</span></div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
             <span style={{ color: "#7a1c1c", fontWeight: 800 }}>฿{p.price}</span>
             {p.stock <= 0 ? (

@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import { MOCK_PRODUCTS, allProducts, loadCategories, type Product } from "@/lib/products";
-import { usePage } from "@/lib/content";
+import { MOCK_PRODUCTS, allProducts, loadCategories, catName, type Product } from "@/lib/products";
+import { usePage, ptitle } from "@/lib/content";
 import { useLang } from "@/lib/i18n";
 import ProductCard from "@/components/ProductCard";
 
 export default function ShopPage() {
   const page = usePage("shop");
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("");
   const [max, setMax] = useState(2000);
@@ -38,12 +38,12 @@ export default function ShopPage() {
   const showCats = [ALL, ...cats.filter((c) => c !== "ทั้งหมด" && c !== ALL)];
   return (
     <div>
-      <h2 style={{ color: "#7a1c1c" }}>{page.title} ({list.length})</h2>
+      <h2 style={{ color: "#7a1c1c" }}>{ptitle(page, lang)} ({list.length})</h2>
       <div className="card" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("search_ph")} style={{ padding: 8, flex: 1, minWidth: 160 }} />
         <button className={!cat ? "btn" : "btn btn-secondary"} onClick={() => setCat("")}>{ALL}</button>
         {showCats.slice(1).map((c) => (
-          <button key={c} className={cat === c ? "btn" : "btn btn-secondary"} onClick={() => setCat(c)}>{c}</button>
+          <button key={c} className={cat === c ? "btn" : "btn btn-secondary"} onClick={() => setCat(c)}>{catName(c, lang)}</button>
         ))}
         <label>{t("max_price")} ฿{max}<input type="range" min={99} max={2000} value={max} onChange={(e) => setMax(parseInt(e.target.value))} /></label>
       </div>

@@ -2,12 +2,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MOCK_PRODUCTS, allProducts, type Product } from "@/lib/products";
-import { usePage } from "@/lib/content";
+import { usePage, ptitle, pbody } from "@/lib/content";
 import { useLang } from "@/lib/i18n";
 import ProductCard from "@/components/ProductCard";
 
 export default function Home() {
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const home = usePage("home");
   const [all, setAll] = useState<Product[]>(MOCK_PRODUCTS);
   useEffect(() => {
@@ -28,8 +28,8 @@ export default function Home() {
         <img src="/logo.jpg" alt="logo" width={72} height={72} />
         <div>
           <span className="badge">{t("home_badge")}</span>
-          <h2 style={{ color: "#7a1c1c", margin: "6px 0" }}>{home.title}</h2>
-          <p style={{ whiteSpace: "pre-wrap" }}>{home.body}</p>
+          <h2 style={{ color: "#7a1c1c", margin: "6px 0" }}>{ptitle(home, lang)}</h2>
+          <p style={{ whiteSpace: "pre-wrap" }}>{pbody(home, lang)}</p>
           <Link className="btn" href="/shop">{t("home_cta")}</Link>
         </div>
       </div>

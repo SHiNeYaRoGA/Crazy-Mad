@@ -14,6 +14,34 @@ export type Product = {
 
 export const DEFAULT_CATEGORIES = ["งานไม้", "ผ้าทอ", "จักสาน", "ของที่ระลึก"];
 
+export const DEFAULT_CAT_EN: Record<string, string> = {
+  "งานไม้": "Woodwork",
+  "ผ้าทอ": "Woven Fabric",
+  "จักสาน": "Basketry",
+  "ของที่ระลึก": "Souvenirs",
+};
+
+export function loadCatEn(): Record<string, string> {
+  if (typeof window === "undefined") return DEFAULT_CAT_EN;
+  try {
+    const raw = localStorage.getItem("category-en");
+    if (!raw) return DEFAULT_CAT_EN;
+    return { ...DEFAULT_CAT_EN, ...JSON.parse(raw) };
+  } catch { return DEFAULT_CAT_EN; }
+}
+
+export function saveCatEn(map: Record<string, string>) {
+  try {
+    localStorage.setItem("category-en", JSON.stringify(map));
+    window.dispatchEvent(new Event("categories-changed"));
+  } catch {}
+}
+
+export function catName(cat: string, lang: "th" | "en"): string {
+  if (lang === "th") return cat;
+  return loadCatEn()[cat] || cat;
+}
+
 export function loadCategories(): string[] {
   if (typeof window === "undefined") return DEFAULT_CATEGORIES;
   try {

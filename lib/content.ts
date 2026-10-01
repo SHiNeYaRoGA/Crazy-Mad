@@ -3,15 +3,23 @@ import { useEffect, useState } from "react";
 
 export type PageKey = "home" | "shop" | "training" | "about" | "contact";
 
-export type PageContent = { title: string; body: string };
+export type PageContent = { title: string; body: string; title_en?: string; body_en?: string };
 
 export const DEFAULT_PAGES: Record<PageKey, PageContent> = {
-  home: { title: "งานมือผู้ต้องขัง สู่ของขวัญพะเยา", body: "ตลาดงานคราฟต์ ที่แค่พูดก็ซื้อได้ - AI พิมพ์/พูดค้นสินค้าจริง + เพลงพื้นหลัง" },
-  shop: { title: "Shop - สินค้าทั้งหมด", body: "" },
-  training: { title: "งานฝึกวิชาชีพ", body: "หน้ารอใส่ข้อมูล - หลักสูตรฝึกอาชีพผู้ต้องขัง (งานไม้ ผ้าทอ จักสาน)" },
-  about: { title: "เกี่ยวกับเรา", body: "หน้ารอใส่ข้อมูล - เรือนจำจังหวัดพะเยา กรมราชทัณฑ์" },
-  contact: { title: "ติดต่อ", body: "หน้ารอใส่ข้อมูล - เบอร์ ที่อยู่ แผนที่" },
+  home: { title: "งานมือผู้ต้องขัง สู่ของขวัญพะเยา", body: "ตลาดงานคราฟต์ ที่แค่พูดก็ซื้อได้ - AI พิมพ์/พูดค้นสินค้าจริง + เพลงพื้นหลัง", title_en: "Inmate Handicrafts, Gifts from Phayao", body_en: "A craft market you can shop by voice - AI finds real products + background music" },
+  shop: { title: "Shop - สินค้าทั้งหมด", body: "", title_en: "Shop - All products", body_en: "" },
+  training: { title: "งานฝึกวิชาชีพ", body: "หน้ารอใส่ข้อมูล - หลักสูตรฝึกอาชีพผู้ต้องขัง (งานไม้ ผ้าทอ จักสาน)", title_en: "Vocational Training", body_en: "Pending info - inmate vocational programs (woodwork, weaving, basketry)" },
+  about: { title: "เกี่ยวกับเรา", body: "หน้ารอใส่ข้อมูล - เรือนจำจังหวัดพะเยา กรมราชทัณฑ์", title_en: "About Us", body_en: "Pending info - Phayao Provincial Prison, Dept. of Corrections" },
+  contact: { title: "ติดต่อ", body: "หน้ารอใส่ข้อมูล - เบอร์ ที่อยู่ แผนที่", title_en: "Contact", body_en: "Pending info - phone, address, map" },
 };
+
+export function ptitle(c: PageContent, lang: "th" | "en"): string {
+  return lang === "en" ? (c.title_en || c.title) : c.title;
+}
+
+export function pbody(c: PageContent, lang: "th" | "en"): string {
+  return lang === "en" ? (c.body_en || c.body) : c.body;
+}
 
 function keyOf(page: PageKey) {
   return `content-${page}`;

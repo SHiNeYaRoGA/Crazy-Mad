@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <DbSync />
         <div className="container">{children}</div>
-        <div className="footer">กรมราชทัณฑ์ | แดงเลือดหมู-ทอง ทางการ | Mock 5 ชิ้น | Checkout จำลอง PHxxxx</div>
+        <div className="footer">เรือนจำจังหวัดพะเยา กรมราชทัณฑ์</div>
         <AIPopup />
       </body>
     </html>

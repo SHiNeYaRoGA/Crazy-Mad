@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 
 export type PageKey = "home" | "shop" | "training" | "about" | "contact";
 
-export type PageContent = { title: string; body: string; title_en?: string; body_en?: string };
+export type ContentBlock = { text: string; bold: boolean; color: string; size: "s" | "m" | "l"; align: "left" | "center" | "right" };
+
+export type PageContent = { title: string; body: string; title_en?: string; body_en?: string; blocks?: ContentBlock[] };
+
+export const BLOCK_COLORS = ["#7a1c1c", "#B8860B", "#2b2320", "#ffffff"];
 
 export const DEFAULT_PAGES: Record<PageKey, PageContent> = {
   home: { title: "งานมือผู้ต้องขัง สู่ของขวัญพะเยา", body: "ตลาดงานคราฟต์ ที่แค่พูดก็ซื้อได้ - AI พิมพ์/พูดค้นสินค้าจริง + เพลงพื้นหลัง", title_en: "Inmate Handicrafts, Gifts from Phayao", body_en: "A craft market you can shop by voice - AI finds real products + background music" },

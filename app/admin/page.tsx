@@ -276,6 +276,43 @@ export default function AdminPage() {
           <textarea value={pageForm.body} onChange={(e) => setPageForm({ ...pageForm, body: e.target.value })} rows={5} style={{ width: "100%", padding: 8, marginTop: 4 }} />
           <label style={{ fontWeight: 700, color: "#7a1c1c", marginTop: 8, display: "block" }}>{t("pages_body")} (English)</label>
           <textarea value={pageForm.body_en || ""} onChange={(e) => setPageForm({ ...pageForm, body_en: e.target.value })} rows={5} style={{ width: "100%", padding: 8, marginTop: 4 }} />
+          {pageKey === "contact" && (
+            <div style={{ marginTop: 12, borderTop: "1px dashed #E3C878", paddingTop: 8 }}>
+              <b>กรอบข้อมูล (แทนเนื้อหาด้านบนเมื่อมีอย่างน้อย 1 กรอบ)</b>
+              {(pageForm.blocks || []).map((b, i) => (
+                <div key={i} className="card" style={{ marginTop: 8 }}>
+                  <textarea value={b.text} onChange={(e) => { const nx = [...(pageForm.blocks || [])]; nx[i] = { ...nx[i], text: e.target.value }; setPageForm({ ...pageForm, blocks: nx }); }} rows={2} style={{ width: "100%", padding: 8 }} placeholder="ข้อความ" />
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 6, alignItems: "center" }}>
+                    <label><input type="checkbox" checked={b.bold} onChange={(e) => { const nx = [...(pageForm.blocks || [])]; nx[i] = { ...nx[i], bold: e.target.checked }; setPageForm({ ...pageForm, blocks: nx }); }} /> ตัวหนา</label>
+                    <label>สี
+                      <select value={b.color} onChange={(e) => { const nx = [...(pageForm.blocks || [])]; nx[i] = { ...nx[i], color: e.target.value }; setPageForm({ ...pageForm, blocks: nx }); }} style={{ marginLeft: 4, padding: 6 }}>
+                        <option value="#7a1c1c">เลือดหมู</option>
+                        <option value="#B8860B">ทอง</option>
+                        <option value="#2b2320">ดำ</option>
+                        <option value="#ffffff">ขาว (พื้นแดง)</option>
+                      </select>
+                    </label>
+                    <label>ขนาด
+                      <select value={b.size} onChange={(e) => { const nx = [...(pageForm.blocks || [])]; nx[i] = { ...nx[i], size: e.target.value as any }; setPageForm({ ...pageForm, blocks: nx }); }} style={{ marginLeft: 4, padding: 6 }}>
+                        <option value="s">เล็ก</option>
+                        <option value="m">กลาง</option>
+                        <option value="l">ใหญ่</option>
+                      </select>
+                    </label>
+                    <label>จัดวาง
+                      <select value={b.align} onChange={(e) => { const nx = [...(pageForm.blocks || [])]; nx[i] = { ...nx[i], align: e.target.value as any }; setPageForm({ ...pageForm, blocks: nx }); }} style={{ marginLeft: 4, padding: 6 }}>
+                        <option value="left">ซ้าย</option>
+                        <option value="center">กลาง</option>
+                        <option value="right">ขวา</option>
+                      </select>
+                    </label>
+                    <button onClick={() => setPageForm({ ...pageForm, blocks: (pageForm.blocks || []).filter((_, j) => j !== i) })}>{t("del")}</button>
+                  </div>
+                </div>
+              ))}
+              <button className="btn btn-secondary" style={{ marginTop: 8 }} onClick={() => setPageForm({ ...pageForm, blocks: [...(pageForm.blocks || []), { text: "", bold: false, color: "#2b2320", size: "m", align: "center" }] })}>+ เพิ่มกรอบ</button>
+            </div>
+          )}
           <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
             <button className="btn" onClick={() => { savePage(pageKey, pageForm); setSaved(`${t("saved_generic")} ${pageKey} ${new Date().toLocaleTimeString()}`); }}>{t("save_page")}</button>
             <button className="btn btn-secondary" onClick={() => { setPageForm(DEFAULT_PAGES[pageKey]); savePage(pageKey, DEFAULT_PAGES[pageKey]); setSaved(t("reset_done")); }}>{t("reset_page")}</button>

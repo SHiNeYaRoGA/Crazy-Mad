@@ -9,6 +9,7 @@ import { addLibraryImage, fileToDataUrl, loadLibrary, removeLibraryImage, type L
 import { DEFAULT_MELUNA, loadMeluna, saveMeluna } from "@/lib/meluna";
 import { isDbConfigured, pullNow } from "@/lib/db";
 import { useLang } from "@/lib/i18n";
+import { loadCourses, saveCourses, type Course } from "@/lib/training";
 
 const PAGE_KEYS: { key: PageKey; labelKey: "nav_shop" | "nav_training" | "nav_about" | "nav_contact" }[] = [
   { key: "home", labelKey: "nav_shop" },
@@ -60,6 +61,9 @@ export default function AdminPage() {
   const [melOn, setMelOn] = useState(true);
   const [melWake, setMelWake] = useState(DEFAULT_MELUNA.wakeWords.join(", "));
   const [melImg, setMelImg] = useState(DEFAULT_MELUNA.imageWords.join(", "));
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [ct, setCt] = useState("");
+  const [cd, setCd] = useState("");
 
   const pl = (path: string) => {
     if (path === "/") return "Home";
@@ -95,6 +99,7 @@ export default function AdminPage() {
     setMelOn(mel.enabled);
     setMelWake(mel.wakeWords.join(", "));
     setMelImg(mel.imageWords.join(", "));
+    setCourses(loadCourses());
     (async () => {
       try {
         const r = await fetch("/api/voicevox?action=speakers");
@@ -323,6 +328,38 @@ export default function AdminPage() {
             <button className="btn" onClick={() => { savePage(pageKey, pageForm); setSaved(`${t("saved_generic")} ${pageKey} ${new Date().toLocaleTimeString()}`); }}>{t("save_page")}</button>
             <button className="btn btn-secondary" onClick={() => { setPageForm(DEFAULT_PAGES[pageKey]); savePage(pageKey, DEFAULT_PAGES[pageKey]); setSaved(t("reset_done")); }}>{t("reset_page")}</button>
           </div>
+          {saved && <div style={{ marginTop: 8, color: "#7a1c1c" }}>{saved}</div>}
+          {pageKey === "training" && (
+            <div style={{ marginTop: 12, borderTop: "1px dashed #E3C878", paddingTop: 8 }}>
+              <b>การ์ดสาขาฝึกอาชีพ (หัวข้อแดง + เส้นบนแดง)</b>
+              {courses.map((c, idx) => (
+                <div key={c.id} className="card" style={{ marginTop: 8, borderTop: "4px solid #7a1c1c" }}>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <b style={{ color: "#7a1c1c" }}>สาขา {idx + 1}</b>
+                    <span style={{ flex: 1 }} />
+                    <button onClick={() => { const nx = courses.filter((x) => x.id !== c.id); saveCourses(nx); setCourses(nx); }}>{t("del")}</button>
+                  </div>
+                  <label style={{ display: "block", marginTop: 6 }}>หัวข้อสาขา
+                    <input value={c.title} onChange={(e) => { const nx = courses.map((x) => x.id === c.id ? { ...x, title: e.target.value } : x); saveCourses(nx); setCourses(nx); }} style={{ width: "100%", padding: 8, marginTop: 4 }} />
+                  </label>
+                  <label style={{ display: "block", marginTop: 6 }}>รายละเอียด
+                    <textarea value={c.desc} onChange={(e) => { const nx = courses.map((x) => x.id === c.id ? { ...x, desc: e.target.value } : x); saveCourses(nx); setCourses(nx); }} rows={3} style={{ width: "100%", padding: 8, marginTop: 4 }} />
+                  </label>
+                  <label style={{ display: "block", marginTop: 6 }}>หัวข้อ (English)
+                    <input value={c.title_en || ""} onChange={(e) => { const nx = courses.map((x) => x.id === c.id ? { ...x, title_en: e.target.value } : x); saveCourses(nx); setCourses(nx); }} style={{ width: "100%", padding: 8, marginTop: 4 }} />
+                  </label>
+                  <label style={{ display: "block", marginTop: 6 }}>รายละเอียด (English)
+                    <textarea value={c.desc_en || ""} onChange={(e) => { const nx = courses.map((x) => x.id === c.id ? { ...x, desc_en: e.target.value } : x); saveCourses(nx); setCourses(nx); }} rows={3} style={{ width: "100%", padding: 8, marginTop: 4 }} />
+                  </label>
+                </div>
+              ))}
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <input placeholder="ชื่อสาขาใหม่" value={ct} onChange={(e) => setCt(e.target.value)} style={{ padding: 8, flex: 1 }} />
+                <input placeholder="รายละเอียด" value={cd} onChange={(e) => setCd(e.target.value)} style={{ padding: 8, flex: 2 }} />
+                <button className="btn btn-secondary" onClick={() => { if (!ct) return; const nx = [...courses, { id: "T" + Date.now(), title: ct, desc: cd }]; saveCourses(nx); setCourses(nx); setCt(""); setCd(""); }}>+ เพิ่มสาขา</button>
+              </div>
+            </div>
+          )}
           {saved && <div style={{ marginTop: 8, color: "#7a1c1c" }}>{saved}</div>}
         </div>
       )}

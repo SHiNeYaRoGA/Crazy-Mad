@@ -8,7 +8,7 @@ export const SYNC_KEYS = [
   "content-home", "content-shop", "content-training", "content-about", "content-contact",
   "orders", "ai-settings", "ai-script", "ai-notfound",
   "ai-intents", "ai-pages-allowed", "ai-admin-guard",
-  "meluna-settings", "image-library",
+  "meluna-settings", "image-library", "training-courses",
 ];
 
 let client: SupabaseClient | null | undefined;

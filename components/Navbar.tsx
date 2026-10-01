@@ -2,8 +2,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import MusicButton from "./MusicButton";
+import { useLang } from "@/lib/i18n";
 
 export default function Navbar() {
+  const { lang, setLang, t } = useLang();
   const [count, setCount] = useState(0);
   useEffect(() => {
     const read = () => {
@@ -23,14 +25,15 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <Link className="navlink" href="/">Home</Link>
-      <Link className="navlink" href="/shop">Shop</Link>
-      <Link className="navlink" href="/training">งานฝึกวิชาชีพ</Link>
-      <Link className="navlink" href="/about">เกี่ยวกับเรา</Link>
-      <Link className="navlink" href="/contact">ติดต่อ</Link>
+      <Link className="navlink" href="/shop">{t("nav_shop")}</Link>
+      <Link className="navlink" href="/training">{t("nav_training")}</Link>
+      <Link className="navlink" href="/about">{t("nav_about")}</Link>
+      <Link className="navlink" href="/contact">{t("nav_contact")}</Link>
       <Link className="navlink" href="/admin">Admin</Link>
       <span style={{ flex: 1 }} />
+      <button className="navlink" onClick={() => setLang(lang === "th" ? "en" : "th")} title="เปลี่ยนภาษา / Language">{lang === "th" ? "EN" : "ไทย"}</button>
       <MusicButton />
-      <Link className="navlink" href="/cart">Cart({count})</Link>
+      <Link className="navlink" href="/cart">{t("nav_cart")}({count})</Link>
     </nav>
   );
 }

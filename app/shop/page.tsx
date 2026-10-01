@@ -2,17 +2,19 @@
 import { useEffect, useState } from "react";
 import { MOCK_PRODUCTS, allProducts, loadCategories, type Product } from "@/lib/products";
 import { usePage } from "@/lib/content";
+import { useLang } from "@/lib/i18n";
 import ProductCard from "@/components/ProductCard";
 
 export default function ShopPage() {
   const page = usePage("shop");
+  const { t } = useLang();
   const [q, setQ] = useState("");
-  const [cat, setCat] = useState("ทั้งหมด");
+  const [cat, setCat] = useState("");
   const [max, setMax] = useState(2000);
   const [all, setAll] = useState<Product[]>(MOCK_PRODUCTS);
-  const [cats, setCats] = useState<string[]>(["ทั้งหมด", ...loadCategories()]);
+  const [cats, setCats] = useState<string[]>(loadCategories());
   useEffect(() => {
-    const reload = () => { setAll(allProducts()); setCats(["ทั้งหมด", ...loadCategories()]); };
+    const reload = () => { setAll(allProducts()); setCats(loadCategories()); };
     reload();
     window.addEventListener("stock-changed", reload);
     window.addEventListener("storage", reload);
@@ -27,20 +29,23 @@ export default function ShopPage() {
       window.removeEventListener("db-pulled", reload);
     };
   }, []);
+  const ALL = t("all");
   const list = all.filter((p) => {
-    const hitQ = !q || `${p.name_th} ${p.material}`.includes(q);
-    const hitC = cat === "ทั้งหมด" || p.category === cat;
+    const hitQ = !q || `${p.name_th} ${p.name_en || ""} ${p.material}`.toLowerCase().includes(q.toLowerCase());
+    const hitC = !cat || p.category === cat;
     return hitQ && hitC && p.price <= max;
   });
+  const showCats = [ALL, ...cats.filter((c) => c !== "ทั้งหมด" && c !== ALL)];
   return (
     <div>
       <h2 style={{ color: "#7a1c1c" }}>{page.title} ({list.length})</h2>
       <div className="card" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="ค้นชื่อ..." style={{ padding: 8, flex: 1, minWidth: 160 }} />
-        {cats.map((c) => (
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("search_ph")} style={{ padding: 8, flex: 1, minWidth: 160 }} />
+        <button className={!cat ? "btn" : "btn btn-secondary"} onClick={() => setCat("")}>{ALL}</button>
+        {showCats.slice(1).map((c) => (
           <button key={c} className={cat === c ? "btn" : "btn btn-secondary"} onClick={() => setCat(c)}>{c}</button>
         ))}
-        <label>ไม่เกิน ฿{max}<input type="range" min={99} max={2000} value={max} onChange={(e) => setMax(parseInt(e.target.value))} /></label>
+        <label>{t("max_price")} ฿{max}<input type="range" min={99} max={2000} value={max} onChange={(e) => setMax(parseInt(e.target.value))} /></label>
       </div>
       <div className="grid3">{list.map((p) => <ProductCard key={p.id} p={p} />)}</div>
     </div>

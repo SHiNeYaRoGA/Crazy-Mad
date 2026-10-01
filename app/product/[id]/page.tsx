@@ -2,14 +2,17 @@
 import { useEffect, useState } from "react";
 import { findProduct, getStock, type Product } from "@/lib/products";
 import { addToCart } from "@/lib/cartStore";
+import { useLang } from "@/lib/i18n";
+import { pname } from "@/components/ProductCard";
 
 export default function ProductPage({ params }: { params: { id: string } }) {
+  const { lang, t } = useLang();
   const [p, setP] = useState<Product | undefined>(undefined);
   useEffect(() => { setP(findProduct(params.id)); }, [params.id]);
-  if (!p) return <div className="card">ไม่พบสินค้า</div>;
+  if (!p) return <div className="card">...</div>;
   const speak = () => {
     try {
-      const u = new SpeechSynthesisUtterance(`${p.name_th} ราคา ${p.price}บาท ${p.story}`);
+      const u = new SpeechSynthesisUtterance(`${pname(p, lang)} ราคา ${p.price}บาท ${p.story}`);
       u.lang = "th-TH";
       speechSynthesis.speak(u);
     } catch {}
@@ -23,17 +26,17 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       )}
       <div>
         <span className="badge">{p.category}</span>
-        <h2 style={{ color: "#7a1c1c" }}>{p.name_th}</h2>
+        <h2 style={{ color: "#7a1c1c" }}>{pname(p, lang)}</h2>
         <div style={{ fontSize: 24, fontWeight: 800, color: "#7a1c1c" }}>฿{p.price}</div>
-        <p><b>วัสดุ:</b> {p.material} | <b>สต็อกคงเหลือ:</b> {getStock(p)}</p>
-        <p><b>เรื่องราว:</b> {p.story}</p>
+        <p><b>{t("lb_material")}:</b> {p.material} | <b>{t("lb_stock")}:</b> {getStock(p)}</p>
+        <p><b>{t("lb_story")}:</b> {p.story}</p>
         <div style={{ display: "flex", gap: 8 }}>
           {getStock(p) <= 0 ? (
-            <span className="badge">สินค้าหมด</span>
+            <span className="badge">{t("sold_out")}</span>
           ) : (
-            <button className="btn" onClick={() => addToCart(p.id, 1)}>ใส่ตะกร้า</button>
+            <button className="btn" onClick={() => addToCart(p.id, 1)}>{t("add_cart")}</button>
           )}
-          <button className="btn btn-secondary" onClick={speak}>🔊 ให้ AI อ่าน</button>
+          <button className="btn btn-secondary" onClick={speak}>{t("btn_read")}</button>
         </div>
       </div>
     </div>

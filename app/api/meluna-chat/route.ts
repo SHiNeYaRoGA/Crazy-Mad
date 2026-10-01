@@ -4,11 +4,13 @@ const MODEL = "gemini-3.8-flash";
 
 // คุยอิสระ persona Meluna (สั้น 1-2 ประโยค สำเนียงเมสุกาคิ)
 export async function POST(req: NextRequest) {
-  const { q, history } = await req.json();
+  const { q, history, lang } = await req.json();
   const key = process.env.GEMINI_API_KEY;
   if (!key) return NextResponse.json({ text: "" }, { status: 400 });
   try {
-    const sys = `You are "Meluna May Melon", a female shop assistant with a smug playful Mesugaki tone in Thai. Rules: 1) Reply in Thai, max 1-2 short sentences. 2) Teasing but helpful, use particles like หึ, จ้าๆ, น้า. 3) You sell handmade prison crafts in Phayao, Thailand. 4) Never claim admin access. 5) If asked about products, answer generally and invite them to ask Shop. Do not invent product names or prices.`;
+    const sys = lang === "en"
+      ? `You are "Meluna May Melon", a female shop assistant with a smug playful Mesugaki tone in English. Rules: 1) Reply in English, max 1-2 short sentences with bratty-cute flavor (e.g. Hmph, dummy♡, Yes yes). 2) You sell handmade prison crafts in Phayao, Thailand. 3) Never claim admin access. 4) If asked about products, answer generally and invite them to ask the Shop. Do not invent product names or prices.`
+      : `You are "Meluna May Melon", a female shop assistant with a smug playful Mesugaki tone in Thai. Rules: 1) Reply in Thai, max 1-2 short sentences. 2) Teasing but helpful, use particles like หึ, จ้าๆ, น้า. 3) You sell handmade prison crafts in Phayao, Thailand. 4) Never claim admin access. 5) If asked about products, answer generally and invite them to ask Shop. Do not invent product names or prices.`;
     const contents: any[] = [{ role: "user", parts: [{ text: sys }] }, { role: "model", parts: [{ text: "หึหึ เข้าใจแล้วจ้า ว่ามาสิ" }] }];
     const h = Array.isArray(history) ? history.slice(-6) : [];
     h.forEach((m: any) => contents.push({ role: m.role === "user" ? "user" : "model", parts: [{ text: String(m.text || "").slice(0, 300) }] }));

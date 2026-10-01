@@ -3,21 +3,25 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAISettings } from "@/lib/aiSettings";
 import { loadScript, matchScript, loadNotFound, detectPageIntent, isAdminRequest, AI_PAGES, loadAllowedPages, loadAdminRefuse } from "@/lib/script";
-import { wakeGreeting, wantsImage, decorate, containsWake, stripWake, freeChatFor } from "@/lib/meluna";
+import { wakeGreeting, wakeGreetingEn, wantsImage, decorate, decorateEn, containsWake, stripWake, freeChatFor, freeChatForEn } from "@/lib/meluna";
 import { loadLibrary } from "@/lib/imageLibrary";
+import { useLang, isEnglish, getLang } from "@/lib/i18n";
 
-type Msg = { role: "user" | "ai"; text: string; speak?: string; speakVv?: string; karaoke?: string; image?: string; goto?: string; audio?: string; links?: { id: string; name: string; price: number }[] };
+type Msg = { role: "user" | "ai"; text: string; speak?: string; speakVv?: string; karaoke?: string; image?: string; goto?: string; audio?: string; links?: { id: string; name: string; name_en?: string; price: number }[] };
 
 const STOP_WORDS = ["หยุด", "หยุดพูด", "พอแล้ว", "stop"];
 
 export default function AIPopup() {
   const router = useRouter();
+  const { lang, t } = useLang();
   const settings = useAISettings();
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
-  const [msgs, setMsgs] = useState<Msg[]>([{ role: "ai", text: "สวัสดี พิมพ์หรือพูดเช่น 'หากระเป๋าไม่เกิน 300' แล้วจะค้นสินค้าจริงให้" }]);
+  const [msgs, setMsgs] = useState<Msg[]>(() => [
+    { role: "ai", text: getLang() === "en" ? "Hi! Type or say e.g. 'bag under 300' and I'll find real products" : "สวัสดี พิมพ์หรือพูดเช่น 'หากระเป๋าไม่เกิน 300' แล้วจะค้นสินค้าจริงให้" },
+  ]);
   const [listening, setListening] = useState(false);
   const [cont, setCont] = useState(false);
   const [reading, setReading] = useState(false);
@@ -85,10 +89,12 @@ export default function AIPopup() {
         }
         speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
-        u.lang = s.speakLang === "karaoke" ? "en-US" : "th-TH";
+        // ข้อความอังกฤษล้วน -> เสียงอังกฤษ (ไม่ว่าจะตั้งโหมดไหน)
+        const forceEn = !hasThai && /[a-zA-Z]/.test(text);
+        u.lang = (s.speakLang === "karaoke" || forceEn) ? "en-US" : "th-TH";
         u.rate = s.rate;
         const vs = speechSynthesis.getVoices();
-        if (s.speakLang === "karaoke") {
+        if (s.speakLang === "karaoke" || forceEn) {
           const en = vs.find((v) => v.lang.startsWith("en"));
           if (en) u.voice = en;
         } else {
@@ -122,9 +128,10 @@ export default function AIPopup() {
   const ask = async (text: string) => {
     if (!text.trim()) return;
     clearSilence();
-    if (STOP_WORDS.some((w) => text.includes(w))) {
+    const en = isEnglish(text);
+    if (STOP_WORDS.some((w) => text.includes(w)) || (en && /\bstop\b/i.test(text))) {
       stopAll();
-      setMsgs((m) => [...m, { role: "user", text }, { role: "ai", text: "หยุดแล้ว" }]);
+      setMsgs((m) => [...m, { role: "user", text }, { role: "ai", text: en ? "Stopped" : "หยุดแล้ว" }]);
       setQ("");
       return;
     }
@@ -152,8 +159,8 @@ export default function AIPopup() {
       }
       const rest = stripWake(text);
       if (!rest) {
-        const g = wakeGreeting();
-        const ai: Msg = { role: "ai", text: `💅 โหมด Meluna เปิดแล้ว ${g}`, speak: g };
+        const g = en ? wakeGreetingEn() : wakeGreeting();
+        const ai: Msg = { role: "ai", text: en ? `💅 Meluna mode on. ${g}` : `💅 โหมด Meluna เปิดแล้ว ${g}`, speak: g };
         setMsgs((m) => [...m, ai]);
         if (contRef.current) {
           await speakMsg(ai);
@@ -181,7 +188,7 @@ export default function AIPopup() {
     try {
       const r = await fetch("/api/ai-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ q: query }) });
       const j = await r.json();
-      let ai: Msg = { role: "ai", text: decorate(j.answer), karaoke: j.karaoke, links: j.items };
+      let ai: Msg = { role: "ai", text: en ? decorateEn(j.answer) : decorate(j.answer), karaoke: j.karaoke, links: j.items };
       // ขอรูป -> สุ่มจากคลังรูปแนบไปด้วย
       if (wantsImage(text)) {
         const lib = loadLibrary();
@@ -198,11 +205,11 @@ export default function AIPopup() {
           let f = "";
           try {
             const hist = msgs.filter((m) => m.role === "user" || m.role === "ai").slice(-6).map((m) => ({ role: m.role, text: m.text }));
-            const cr = await fetch("/api/meluna-chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ q: query, history: hist }) });
+            const cr = await fetch("/api/meluna-chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ q: query, history: hist, lang: en ? "en" : "th" }) });
             const cj = await cr.json();
             if (cj.text) f = cj.text;
           } catch {}
-          if (!f) f = freeChatFor(query);
+          if (!f) f = en ? freeChatForEn(query) : freeChatFor(query);
           ai = { role: "ai", text: f, speak: f };
         } else {
           const nf = loadNotFound();
@@ -226,7 +233,7 @@ export default function AIPopup() {
         else armSilence();
       }
     } catch {
-      setMsgs((m) => [...m, { role: "ai", text: "ค้นไม่สำเร็จ ลองคำว่า กระเป๋า / ไม้ / ผ้า" }]);
+      setMsgs((m) => [...m, { role: "ai", text: t("not_found") }]);
       if (contRef.current) startListen();
     }
   };
@@ -255,7 +262,7 @@ export default function AIPopup() {
       setMicErr("");
       try { recRef.current?.abort(); } catch {}
       const rec = new SR();
-      rec.lang = "th-TH";
+      rec.lang = lang === "en" ? "en-US" : "th-TH";
       rec.interimResults = false;
       recRef.current = rec;
       setListening(true);
@@ -286,7 +293,7 @@ export default function AIPopup() {
       if (!SR) { setMicErr("browser นี้ใช้ไมค์ไม่ได้ ให้พิมพ์แทน"); return; }
       setMicErr("");
       const rec = new SR();
-      rec.lang = "th-TH";
+      rec.lang = lang === "en" ? "en-US" : "th-TH";
       setListening(true);
       rec.onresult = (e: any) => { const t = e.results[0][0].transcript; setListening(false); setMicErr(""); setQ(t); ask(t); };
       rec.onerror = (e: any) => {
@@ -305,7 +312,7 @@ export default function AIPopup() {
     if (cont) { stopAll(); }
     else {
       setCont(true);
-      setMsgs((m) => [...m, { role: "ai", text: "เปิดโหมดคุยต่อเนื่องแล้ว พูดได้เลย พูดว่า 'หยุด' เพื่อหยุด" }]);
+      setMsgs((m) => [...m, { role: "ai", text: lang === "en" ? "Continuous chat on. Say 'stop' to stop" : "เปิดโหมดคุยต่อเนื่องแล้ว พูดได้เลย พูดว่า 'หยุด' เพื่อหยุด" }]);
       startListen();
     }
   };
@@ -329,27 +336,27 @@ export default function AIPopup() {
               {m.image && <div><img src={m.image} alt="" style={{ width: "100%", maxWidth: 260, borderRadius: 6, marginTop: 6, border: "1px solid #E3C878" }} /></div>}
               {m.goto && <div><a href={m.goto} style={{ color: "#7a1c1c", fontWeight: 700 }}>ไปหน้า{AI_PAGES.find((p) => p.path === m.goto)?.label || m.goto} →</a></div>}
               {m.links?.map((l) => (
-                <div key={l.id}><a href={`/product/${l.id}`} style={{ color: "#7a1c1c", fontWeight: 700 }}>{l.name} ฿{l.price} [ดู]</a></div>
+                <div key={l.id}><a href={`/product/${l.id}`} style={{ color: "#7a1c1c", fontWeight: 700 }}>{lang === "en" && (l as any).name_en ? (l as any).name_en : l.name} ฿{l.price} [{lang === "en" ? "view" : "ดู"}]</a></div>
               ))}
-              {m.role === "ai" && <div><button className="btn-secondary btn" style={{ fontSize: 12, marginTop: 6 }} onClick={() => speakMsg(m)}>🔊 พูด</button></div>}
+              {m.role === "ai" && <div><button className="btn-secondary btn" style={{ fontSize: 12, marginTop: 6 }} onClick={() => speakMsg(m)}>{t("speak_btn")}</button></div>}
             </div>
           </div>
         ))}
       </div>
       <div style={{ padding: 10, borderTop: "1px solid #E3C878" }}>
         <div style={{ display: "flex", gap: 6 }}>
-          <input value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Enter" && ask(q)} placeholder="หากระเป๋าไม่เกิน 300" style={{ flex: 1, padding: 8 }} />
+          <input value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Enter" && ask(q)} placeholder={t("ai_ph")} style={{ flex: 1, padding: 8 }} />
           <button className="btn" onClick={micOnce} style={listening ? { background: "#c0392b" } : undefined} title="พูดค้นหา">{listening ? "🔴" : "🎤"}</button>
-          <button className="btn" onClick={() => ask(q)}>ส่ง</button>
+          <button className="btn" onClick={() => ask(q)}>{t("send")}</button>
         </div>
-        {listening && <div style={{ marginTop: 6, fontSize: 12, color: "#7a1c1c" }}>🎤 กำลังฟัง... พูดได้เลย</div>}
+        {listening && <div style={{ marginTop: 6, fontSize: 12, color: "#7a1c1c" }}>{t("listening")}</div>}
         {micErr && <div style={{ marginTop: 6, fontSize: 12, color: "#7a1c1c" }}>🎤 {micErr}</div>}
         <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
           <button className={cont ? "btn" : "btn btn-secondary"} style={{ flex: 1 }} onClick={toggleCont}>
-            {cont ? "⏹ หยุดคุยต่อเนื่อง" : "▶ คุยต่อเนื่อง"}
+            {cont ? t("cont_on") : t("cont_off")}
           </button>
           <button className={reading ? "btn" : "btn btn-secondary"} style={{ flex: 1 }} onClick={() => (reading ? stopAll() : readAllScript())}>
-            {reading ? "⏹ หยุดอ่าน" : "▶ อ่านสคริปต์ทั้งหมด"}
+            {reading ? t("stop_read") : t("read_all")}
           </button>
         </div>
         {speakErr && <div style={{ marginTop: 6, fontSize: 12, color: "#7a1c1c" }}>🔇 {speakErr}</div>}

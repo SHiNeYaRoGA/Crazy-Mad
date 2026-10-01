@@ -24,14 +24,19 @@ export async function POST(req: NextRequest) {
   const { q } = await req.json();
   const query = String(q || "");
   const { hits, exact } = searchProducts(query);
+  const enQ = !/[ก-ฮ]/.test(query) && /[a-zA-Z]/.test(query);
   // ลองใช้ Gemini ถ้ามี key (optional) ไม่งั้น fallback keyword
   let answer = "";
   if (hits.length === 0) {
-    answer = `ไม่พบ ลองคำว่า กระเป๋า / ไม้ / ผ้า / ของที่ระลึก`;
+    answer = enQ ? `Not found, try: bag / wood / cloth / souvenir` : `ไม่พบ ลองคำว่า กระเป๋า / ไม้ / ผ้า / ของที่ระลึก`;
   } else if (!exact) {
-    answer = `ไม่เจอตรงๆ มีใกล้เคียง ${hits.length} ชิ้น: ` + hits.map((h, i) => `${i + 1}.${h.name_th} ${h.price}`).join(" ");
+    answer = enQ
+      ? `No exact match, ${hits.length} similar: ` + hits.map((h, i) => `${i + 1}.${h.name_en || h.name_th} ${h.price}`).join(" ")
+      : `ไม่เจอตรงๆ มีใกล้เคียง ${hits.length} ชิ้น: ` + hits.map((h, i) => `${i + 1}.${h.name_th} ${h.price}`).join(" ");
   } else {
-    answer = `เจอ ${hits.length} ชิ้น: ` + hits.map((h, i) => `${i + 1}.${h.name_th} ${h.price}`).join(" ");
+    answer = enQ
+      ? `Found ${hits.length} items: ` + hits.map((h, i) => `${i + 1}.${h.name_en || h.name_th} ${h.price}`).join(" ")
+      : `เจอ ${hits.length} ชิ้น: ` + hits.map((h, i) => `${i + 1}.${h.name_th} ${h.price}`).join(" ");
   }
   let karaoke = "";
   try {
@@ -64,6 +69,6 @@ export async function POST(req: NextRequest) {
     answer,
     karaoke,
     exact,
-    items: hits.map((h) => ({ id: h.id, name: h.name_th, price: h.price })),
+    items: hits.map((h) => ({ id: h.id, name: h.name_th, name_en: h.name_en, price: h.price })),
   });
 }

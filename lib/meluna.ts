@@ -100,6 +100,38 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+const FLAVOR_EN = [
+  "Hmph, that was easy",
+  "Couldn't even do that yourself? Here you go, dummy♡",
+  "Take it, I found it for you",
+];
+
+export function decorateEn(text: string): string {
+  return `${text} ${pick(FLAVOR_EN)}`;
+}
+
+const FALLBACK_CHAT_EN = [
+  "Hmph, how would I know that? Ask about the shop instead, dummy♡",
+  "Yes yes, I'm listening. So which piece do you want?",
+];
+
+export function freeChatForEn(q: string): string {
+  const query = q.toLowerCase();
+  for (const p of CHAT_PATTERNS_EN) {
+    if (p.words.some((w) => query.includes(w))) return pick(p.replies);
+  }
+  return pick(FALLBACK_CHAT_EN);
+}
+
+const CHAT_PATTERNS_EN: { words: string[]; replies: string[] }[] = [
+  { words: ["hello", "hi", "hey"], replies: ["Hmph, hello. So what will you buy today?", "Yes yes, hi. Meluna is here, dummy♡"] },
+  { words: ["your name", "who are you", "name"], replies: ["Hmph, remember it: I'm Meluna May Melon", "Meluna, obviously. Call me meluna, melon or may"] },
+  { words: ["thank"], replies: ["Hmph, at least you know manners. Buy something then", "Yes yes, you're welcome. Call me again, dummy♡"] },
+  { words: ["price", "cheap", "expensive", "how much"], replies: ["Hmph, handmade at this price is cheap already. Go look at the Shop", "From just 99 baht, dummy♡"] },
+  { words: ["ship", "deliver", "long"], replies: ["It's a mock order, dummy. Fill in name and address to get a PHxxxx number"] },
+  { words: ["bye"], replies: ["Yes yes, go already. Come back and buy something, dummy♡"] },
+];
+
 export function freeChatFor(q: string): string {
   const query = q.toLowerCase();
   for (const p of CHAT_PATTERNS) {
@@ -114,6 +146,11 @@ export function freeChat(): string {
 
 export function wakeGreeting(): string {
   const picks = ["หึ เรียกฉันเหรอ มีอะไรว่ามาสิ", "จ้าๆ Meluna มาแล้ว อยากได้อะไรว่ามา", "หึหึ เรียกชื่อถูกด้วย ว่ามาสิ"];
+  return picks[Math.floor(Math.random() * picks.length)];
+}
+
+export function wakeGreetingEn(): string {
+  const picks = ["Hmph, called for me? Spit it out, dummy♡", "Yes yes, Meluna is here. What do you want?"];
   return picks[Math.floor(Math.random() * picks.length)];
 }
 

@@ -23,13 +23,14 @@ export default function AdminPage() {
   const [tab, setTab] = useState<"products" | "pages" | "orders" | "ai">("products");
   const [items, setItems] = useState<Product[]>(MOCK_PRODUCTS);
   const [name, setName] = useState("");
+  const [nameEn, setNameEn] = useState("");
   const [price, setPrice] = useState(100);
   const [img, setImg] = useState("");
   const [cats, setCats] = useState<string[]>([]);
   const [newCat, setNewCat] = useState("");
   const [pickCat, setPickCat] = useState("ของที่ระลึก");
   const [editId, setEditId] = useState("");
-  const [ef, setEf] = useState({ name: "", price: 0, category: "", stock: 0, image: "" });
+  const [ef, setEf] = useState({ name: "", nameEn: "", price: 0, category: "", stock: 0, image: "" });
   const [pageKey, setPageKey] = useState<PageKey>("home");
   const [pageForm, setPageForm] = useState<PageContent>(DEFAULT_PAGES.home);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -113,11 +114,11 @@ export default function AdminPage() {
   const add = () => {
     if (!name) return;
     const custom = loadCustomProducts();
-    const np: Product = { id: "C" + Date.now(), name_th: name, category: pickCat, price, stock: 10, material: "-", story: "เพิ่มโดยแอดมิน", color: "#666", emoji: "📦", image: img || undefined };
+    const np: Product = { id: "C" + Date.now(), name_th: name, name_en: nameEn || undefined, category: pickCat, price, stock: 10, material: "-", story: "เพิ่มโดยแอดมิน", color: "#666", emoji: "📦", image: img || undefined };
     const next = [np, ...custom];
     persistCustom(next);
     setItems(allProducts());
-    setName(""); setPrice(100); setImg("");
+    setName(""); setNameEn(""); setPrice(100); setImg("");
   };
 
   const remove = (id: string) => {
@@ -174,6 +175,7 @@ export default function AdminPage() {
           <div className="card">
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <input placeholder="ชื่อสินค้าใหม่" value={name} onChange={(e) => setName(e.target.value)} style={{ padding: 8, flex: 1 }} />
+              <input placeholder="English name" value={nameEn} onChange={(e) => setNameEn(e.target.value)} style={{ padding: 8, flex: 1 }} />
               <input type="number" value={price} onChange={(e) => setPrice(parseInt(e.target.value) || 0)} style={{ padding: 8, width: 120 }} />
               <select value={pickCat} onChange={(e) => setPickCat(e.target.value)} style={{ padding: 8 }}>
                 {cats.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -192,14 +194,15 @@ export default function AdminPage() {
                 {p.image && <img src={p.image} alt="" style={{ width: 48, height: 36, objectFit: "cover", borderRadius: 4 }} />}
                 <span>{p.name_th} ฿{p.price} <span className="badge">{p.category}</span> <span style={{ fontSize: 12 }}>คงเหลือ {getStock(p)}</span></span>
                 <span style={{ flex: 1 }} />
-                <button className="btn btn-secondary" onClick={() => { setEditId(p.id); setEf({ name: p.name_th, price: p.price, category: p.category, stock: getStock(p), image: p.image || "" }); }}>แก้</button>
+                <button className="btn btn-secondary" onClick={() => { setEditId(p.id); setEf({ name: p.name_th, nameEn: p.name_en || "", price: p.price, category: p.category, stock: getStock(p), image: p.image || "" }); }}>แก้</button>
                 <button onClick={() => remove(p.id)}>ลบ</button>
               </div>
               {editId === p.id && (
                 <div className="card">
                   <b>แก้: {p.id}</b>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-                    <input value={ef.name} onChange={(e) => setEf({ ...ef, name: e.target.value })} style={{ padding: 8, flex: 2 }} placeholder="ชื่อ" />
+                    <input value={ef.name} onChange={(e) => setEf({ ...ef, name: e.target.value })} style={{ padding: 8, flex: 1 }} placeholder="ชื่อ" />
+                    <input value={ef.nameEn} onChange={(e) => setEf({ ...ef, nameEn: e.target.value })} style={{ padding: 8, flex: 1 }} placeholder="English name" />
                     <label>ราคา<input type="number" value={ef.price} onChange={(e) => setEf({ ...ef, price: parseInt(e.target.value) || 0 })} style={{ padding: 8, width: 110, marginLeft: 4 }} /></label>
                     <label>หมวด
                       <select value={ef.category} onChange={(e) => setEf({ ...ef, category: e.target.value })} style={{ padding: 8, marginLeft: 4 }}>
@@ -217,10 +220,10 @@ export default function AdminPage() {
                     <button className="btn" onClick={() => {
                       const isMock = MOCK_PRODUCTS.some((x) => x.id === p.id);
                       if (isMock) {
-                        saveOverride(p.id, { name_th: ef.name, price: ef.price, category: ef.category, image: ef.image || undefined });
+                        saveOverride(p.id, { name_th: ef.name, name_en: ef.nameEn || undefined, price: ef.price, category: ef.category, image: ef.image || undefined });
                         setStock(p.id, ef.stock);
                       } else {
-                        const custom = loadCustomProducts().map((x) => x.id === p.id ? { ...x, name_th: ef.name, price: ef.price, category: ef.category, stock: ef.stock, image: ef.image || undefined } : x);
+                        const custom = loadCustomProducts().map((x) => x.id === p.id ? { ...x, name_th: ef.name, name_en: ef.nameEn || undefined, price: ef.price, category: ef.category, stock: ef.stock, image: ef.image || undefined } : x);
                         try { localStorage.setItem("custom-products", JSON.stringify(custom)); window.dispatchEvent(new Event("products-changed")); } catch {}
                       }
                       setItems(allProducts());

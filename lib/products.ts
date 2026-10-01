@@ -1,6 +1,7 @@
 export type Product = {
   id: string;
   name_th: string;
+  name_en?: string;
   category: string;
   price: number;
   stock: number;
@@ -62,7 +63,7 @@ function loadStockMap(): Record<string, number> {
   catch { return {}; }
 }
 
-export type ProductOverride = { name_th?: string; price?: number; category?: string; image?: string; material?: string; story?: string };
+export type ProductOverride = { name_th?: string; name_en?: string; price?: number; category?: string; image?: string; material?: string; story?: string };
 
 function loadOverrides(): Record<string, ProductOverride> {
   try { return JSON.parse(localStorage.getItem("product-overrides") || "{}"); }
@@ -120,6 +121,7 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "P01",
     name_th: "กระเป๋าผ้าย้อมคราม",
+    name_en: "Indigo-Dyed Cloth Bag",
     category: "ผ้าทอ",
     price: 350,
     stock: 20,
@@ -131,6 +133,7 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "P02",
     name_th: "โคมไม้ไผ่สาน",
+    name_en: "Woven Bamboo Lamp",
     category: "จักสาน",
     price: 499,
     stock: 12,
@@ -142,6 +145,7 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "P03",
     name_th: "ผ้าพันคอทอมือ",
+    name_en: "Handwoven Scarf",
     category: "ผ้าทอ",
     price: 290,
     stock: 30,
@@ -153,6 +157,7 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "P04",
     name_th: "ชุดไม้แกะสลัก",
+    name_en: "Carved Wooden Elephant Set",
     category: "งานไม้",
     price: 550,
     stock: 8,
@@ -164,6 +169,7 @@ export const MOCK_PRODUCTS: Product[] = [
   {
     id: "P05",
     name_th: "พวงกุญแจผ้าทอ",
+    name_en: "Woven Keychain",
     category: "ของที่ระลึก",
     price: 99,
     stock: 100,
@@ -173,6 +179,13 @@ export const MOCK_PRODUCTS: Product[] = [
     emoji: "🔑",
   },
 ];
+
+const EN_CAT: Record<string, string> = {
+  "งานไม้": "wood wooden carving furniture",
+  "ผ้าทอ": "cloth fabric woven weaving textile scarf",
+  "จักสาน": "bamboo basket basketry woven lamp",
+  "ของที่ระลึก": "souvenir gift keychain",
+};
 
 const SYNONYMS: Record<string, string[]> = {
   "กระเป๋า": ["กระเปา", "bag", "ถุง", "เป้"],
@@ -195,7 +208,7 @@ export function searchProducts(q: string, maxPrice?: number): { hits: Product[];
   });
   const words = expanded.split(/\s+/).filter((w) => w.length > 1);
   const scored = MOCK_PRODUCTS.map((p) => {
-    const hay = `${p.name_th} ${p.category} ${p.material} ${p.story}`.toLowerCase();
+    const hay = `${p.name_th} ${p.name_en || ""} ${p.category} ${EN_CAT[p.category] || ""} ${p.material} ${p.story}`.toLowerCase();
     let score = 0;
     words.forEach((w) => { if (hay.includes(w)) score += w.length >= 3 ? 2 : 1; });
     if (kw.includes("ไม้") && hay.includes("ไม้")) score += 2;

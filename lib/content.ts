@@ -5,7 +5,7 @@ export type PageKey = "home" | "shop" | "training" | "about" | "contact";
 
 export type ContentBlock = { text: string; bold: boolean; color: string; size: "s" | "m" | "l"; align: "left" | "center" | "right" };
 
-export type PageContent = { title: string; body: string; title_en?: string; body_en?: string; blocks?: ContentBlock[] };
+export type PageContent = { title: string; body: string; title_en?: string; body_en?: string; blocks?: ContentBlock[]; showPhoto?: boolean; showVision?: boolean };
 
 export const BLOCK_COLORS = ["#7a1c1c", "#B8860B", "#2b2320", "#ffffff"];
 

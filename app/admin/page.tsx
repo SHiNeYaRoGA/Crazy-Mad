@@ -276,6 +276,12 @@ export default function AdminPage() {
           <textarea value={pageForm.body} onChange={(e) => setPageForm({ ...pageForm, body: e.target.value })} rows={5} style={{ width: "100%", padding: 8, marginTop: 4 }} />
           <label style={{ fontWeight: 700, color: "#7a1c1c", marginTop: 8, display: "block" }}>{t("pages_body")} (English)</label>
           <textarea value={pageForm.body_en || ""} onChange={(e) => setPageForm({ ...pageForm, body_en: e.target.value })} rows={5} style={{ width: "100%", padding: 8, marginTop: 4 }} />
+          {pageKey === "about" && (
+            <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
+              <label><input type="checkbox" checked={pageForm.showPhoto !== false} onChange={(e) => setPageForm({ ...pageForm, showPhoto: e.target.checked })} /> โชว์กรอบรูป ผบ.</label>
+              <label><input type="checkbox" checked={pageForm.showVision !== false} onChange={(e) => setPageForm({ ...pageForm, showVision: e.target.checked })} /> โชว์กรอบวิสัยทัศน์</label>
+            </div>
+          )}
           {(
             <div style={{ marginTop: 12, borderTop: "1px dashed #E3C878", paddingTop: 8 }}>
               <b>กรอบข้อมูล (แทนเนื้อหาด้านบนเมื่อมีอย่างน้อย 1 กรอบ)</b>
